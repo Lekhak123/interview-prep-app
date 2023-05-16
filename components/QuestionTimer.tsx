@@ -27,7 +27,17 @@ const QuestionTimer = ({timerhasstopped} : any) => {
                 setisplaying(false);
                 timerhasstopped();
             }}>
-                {({remainingTime}) => remainingTime}
+               {({remainingTime}) => (
+                <div className="d-flex flex-col justify-center align-items-center">
+                    <span className='text-sm sm:text-sm'>
+                    Next question in
+                    </span>
+                    <div className="font-bold  text-emerald-300 capitalize d-flex justify-center text-center sm:text-base text-base">
+
+                     {remainingTime  }  
+                    </div>
+                </div>
+                )}
             </CountdownCircleTimer>
 }
 

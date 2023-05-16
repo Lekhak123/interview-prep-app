@@ -46,7 +46,6 @@ export default async function getInterviewQuestions() {
         ...semiandoptionalShuffle
     ];
     if (!(newArray.indexOf('Plans after graduation?') === -1)) {
-        console.log("here")
         newArray = newArray.filter(function (value) {
             return value !== 'Plans after graduation?'
         });
@@ -60,7 +59,6 @@ export default async function getInterviewQuestions() {
     };
 
     if (!(newArray.indexOf('What is the name of the university where you are going to study?') === -1)) {
-        console.log("here")
         newArray = newArray.filter(function (value) {
             return value !=='What is the name of the university where you are going to study?'
         });

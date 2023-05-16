@@ -9,31 +9,36 @@ const Question = ({questionsEnded, start, stopquestiontimeSound, question, quest
 
     let pressed = false;
     const nextquestion = (e : any) => {
+        if(questionsEnded){
+            return;
+        };
         setisplaying(false);
         document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
-        if (!pressed) {
-            start();
-        };
-        pressed = true;
+        start();
+        // if (!pressed) {
+        //     start();
+        // };
+        // pressed = true;
     };
 
     const timerhasstopped = () => {
-        console.log("here finished")
+        if(questionsEnded){
+            return;
+        };
         questionFinished(question);
-        setisplaying(true);
         stopquestiontimeSound();
         if (!questionsEnded) {
-            document.addEventListener('keydown', (e : KeyboardEvent) => nextquestion(e));
+            // document.addEventListener('keydown', (e : KeyboardEvent) => nextquestion(e));
         } else if (questionsEnded) {
             document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
         }
     };
 
     useEffect(() => {
+        setisplaying(true);
 
         document.addEventListener('keydown', (e : KeyboardEvent) => {
             nextquestion(e);
-            // start();
         });
 
 
@@ -46,16 +51,25 @@ const Question = ({questionsEnded, start, stopquestiontimeSound, question, quest
     return (
 
         <div
-            className="questionContainer d-flex flex-col justify-center align-items-center m-3">
-            <span className='d-flex justify-center align-item-center m-4'>
+            className="questionContainer">
+           
+           {isplaying &&
+           <div className="questiontextwrapper d-flex justify-centent-center align-items-center">
+
+            <div className=' d-flex justify-right align-items-center text-center m-auto mb-4 text-sm'>
                 Press any key to stop.
 
-            </span>
+            </div>
             <div
-                className="mb-3 underline decoration-solid decoration-pink-500 hover:decoration-wavy questioncontainer text-7xl sm:text-3xl font-bold capitalize antialiased text-rose-600 hover:text-emerald-600">
+                className="mb-3 underline decoration-solid decoration-pink-500 hover:decoration-wavy questioncontain text-3xl  font-bold capitalize antialiased text-rose-600 hover:text-emerald-600">
                 {question}
             </div>
-            {!isplaying && <QuestionTimer timerhasstopped={timerhasstopped}/>}
+           </div>
+           }
+            <div className="questiontimer d-flex justify-center m-3">
+
+            {!isplaying && <QuestionTimer  timerhasstopped={timerhasstopped}/>}
+            </div>
         </div>
 
     )
