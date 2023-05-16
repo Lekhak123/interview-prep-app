@@ -37,7 +37,7 @@ export default function Home() {
     const playQuestionTimerAudio = () => {
         if (questionsEnded) {
             return;
-        }
+        };
         questionTimerAudioRef
             ?.current
                 ?.play();
