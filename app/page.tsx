@@ -7,6 +7,10 @@ import timerSound from "@/utils/TimerSound";
 import useSound from 'use-sound';
 import getInterviewQuestions from "@/utils/GetInterviewQuestions";
 import Question from "@/components/Question";
+import RecorderHooks from "@/components/RecordingText";
+
+
+
 export default function Home() {
     const [started,
         setstarted] = useState(false);
@@ -183,7 +187,7 @@ export default function Home() {
                 {questionsStart && <Question
                     questionsEnded={questionsEnded}
                     stopquestiontimeSound={stopQuestionstime}
-                    start={playQuestionTimerAudio}
+                    startTimerAudio={playQuestionTimerAudio}
                     questionFinished={questionFinished}
                     question={currentQuestion}
                     interruptionMode={interruptionMode}/>
@@ -196,6 +200,7 @@ export default function Home() {
                 {started && <CircleTimer stoptime={stoptime} duration={5}/>}
             </div>
             {questionsEnded && <div>Questions ended</div>}
+            {/* <RecorderHooks/> */}
         </div>
     )
 }

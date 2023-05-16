@@ -1,13 +1,12 @@
-import {useState, useEffect} from 'react';
+import {useState, useRef,useEffect} from 'react';
 import QuestionTimer from './QuestionTimer';
-import timerSound from "@/utils/TimerSound";
-import useSound from 'use-sound';
+import { useRecorder } from "voice-recorder-react";
 import getRandomInterruptiontime from '@/utils/GetInterruptiontime';
 
 const Question = ({
     interruptionMode,
     questionsEnded,
-    start,
+    startTimerAudio,
     stopquestiontimeSound,
     question,
     questionFinished
@@ -15,7 +14,7 @@ const Question = ({
     const [isplaying,
         setisplaying] = useState(true);
 
-    let pressed = false;
+
     const [interruptionInQueue, setinterruptionInQueue] = useState(false);
     useEffect(() => {
         if (questionsEnded) {
@@ -47,14 +46,55 @@ const Question = ({
         }
     }, [question]);
 
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const [hasRecording, setHasRecording] = useState(false);
+    const {
+      time,
+      data,
+      stop,
+      start,
+      pause,
+      paused,
+      resume,
+      recording
+    } = useRecorder();
+
+
+    const togglePlay = () => {
+        if (audioRef.current?.paused) {
+          audioRef.current?.play();
+        } else {
+          audioRef.current?.pause();
+        }
+      };
+      useEffect(() => {
+        console.log(recording,time,data)
+      }, [time])
+      
+
+      useEffect(() => {
+        if (data.url && audioRef.current) {
+          audioRef.current.src = data.url;
+        }
+      }, [data.url]);
+      let pressed = true;
+
     const nextquestion = () => {
         if (questionsEnded) {
             return;
         };
-        setisplaying(false);
-        document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
-        start();
-        // if (!pressed) {     start(); }; pressed = true;
+        if (recording) {
+            stop();
+            setHasRecording(true);
+            console.log( audioRef.current?.src);
+          };
+          document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
+          if(pressed){
+              setisplaying(false);
+          };
+          pressed=false;
+        startTimerAudio();
+        // if (!pressed) {     startTimerAudio(); }; pressed = true;
     };
 
     const timerhasstopped = () => {
@@ -71,13 +111,23 @@ const Question = ({
     };
 
     useEffect(() => {
-        setisplaying(true);
 
+            if(!recording && !hasRecording){
+                start();
+                console.log("recording has started")
+                setHasRecording(false);
+            }
+
+        setisplaying(true);
         document.addEventListener('keydown', (e : KeyboardEvent) => {
-            nextquestion();
+            if(isplaying){
+
+                nextquestion();
+            }
         });
 
         return () => {
+        
             document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
         };
 
@@ -105,6 +155,7 @@ const Question = ({
 
                 {!isplaying && <QuestionTimer timerhasstopped={timerhasstopped}/>}
             </div>
+            <audio ref={audioRef} hidden />
         </div>
 
     )
