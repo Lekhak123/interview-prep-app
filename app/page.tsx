@@ -7,9 +7,7 @@ import timerSound from "@/utils/TimerSound";
 import useSound from 'use-sound';
 import getInterviewQuestions from "@/utils/GetInterviewQuestions";
 import Question from "@/components/Question";
-import RecorderHooks from "@/components/RecordingText";
-
-
+import QuestionWithAudio from "@/components/QuestionWithAudio";
 
 export default function Home() {
     const [started,
@@ -84,6 +82,8 @@ export default function Home() {
         setquestionsNumber] = useState(0);
     const [currentQuestion,
         setcurrentQuestion] = useState("");
+    const [audioRecordings,
+        setaudioRecordings] = useState <any> ([]);
 
     const getQuestions = async() => {
         let questions = await getInterviewQuestions();
@@ -107,10 +107,13 @@ export default function Home() {
     };
 
     const questionsFinished = () => {
+
         stopQuestionTimerAudio();
+
         setquestionsStart(false);
         getQuestions();
         setquestionsEnded(true);
+        console.log(audioRecordings);
     };
 
     const questionFinished = (finishedquestion : string) => {
@@ -132,6 +135,14 @@ export default function Home() {
                 ?.checked || false;
         setinterruptionMode(option);
     };
+    const [audioFeedbackMode,
+        setaudioFeedbackMode] = useState(true);
+    const handleaudioFeedbackMode = (e : any) => {
+        let option = e
+            ?.target
+                ?.checked || false;
+        setaudioFeedbackMode(option);
+    };
 
     return (
 
@@ -150,19 +161,34 @@ export default function Home() {
                         handleResetButton
                     } />}
 
-                    {!started && <div className="d-flex justify-center align-middle flex-row">
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                className="toggle toggle-success"
-                                id="interruption"
-                                checked={interruptionMode}
-                                onChange={(e) => {
-                                handleinterruptionchance(e)
-                            }}/>
-                            <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Interruption Mode</span>
-                        </label>
+                    {!started && <div className="d-flex justify-center align-middle flex-col">
+                        <div className="interruption">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="toggle toggle-success"
+                                    id="interruption"
+                                    checked={interruptionMode}
+                                    onChange={(e) => {
+                                    handleinterruptionchance(e)
+                                }}/>
+                                <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Interruption</span>
+                            </label>
 
+                        </div>
+                        <div className="audioFeedbackMode">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="toggle toggle-error"
+                                    id="audioFeedbackMode"
+                                    checked={audioFeedbackMode}
+                                    onChange={(e) => {
+                                    handleaudioFeedbackMode(e)
+                                }}/>
+                                <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Voice Feedback</span>
+                            </label>
+                        </div>
                     </div>
 }
                 </div>
@@ -184,7 +210,7 @@ export default function Home() {
 
             <div className="questionandtimerwrapper d-flex justify-center flex-col">
 
-                {questionsStart && <Question
+                {questionsStart && !audioFeedbackMode && <Question
                     questionsEnded={questionsEnded}
                     stopquestiontimeSound={stopQuestionstime}
                     startTimerAudio={playQuestionTimerAudio}
@@ -192,6 +218,19 @@ export default function Home() {
                     question={currentQuestion}
                     interruptionMode={interruptionMode}/>
 }
+
+                {questionsStart && audioFeedbackMode && <QuestionWithAudio
+                    questionsEnded={questionsEnded}
+                    stopquestiontimeSound={stopQuestionstime}
+                    startTimerAudio={playQuestionTimerAudio}
+                    questionFinished={questionFinished}
+                    question={currentQuestion}
+                    interruptionMode={interruptionMode}
+                    audioFeedbackMode={audioFeedbackMode}
+                    setaudioRecordings={setaudioRecordings}
+                    audioRecordings={audioRecordings}/>
+}
+
                 {questionsStart && <audio ref={questionTimerAudioRef} src={SoundLocation}/>}
 
             </div>
@@ -200,7 +239,6 @@ export default function Home() {
                 {started && <CircleTimer stoptime={stoptime} duration={5}/>}
             </div>
             {questionsEnded && <div>Questions ended</div>}
-            {/* <RecorderHooks/> */}
         </div>
     )
 }

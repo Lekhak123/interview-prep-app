@@ -3,13 +3,16 @@ import QuestionTimer from './QuestionTimer';
 import getRandomInterruptiontime from '@/utils/GetInterruptiontime';
 const MicRecorder = require('mic-recorder-to-mp3');
 
-const Question = ({
+const QuestionWithAudio = ({
     interruptionMode,
     questionsEnded,
     startTimerAudio,
     stopquestiontimeSound,
     question,
-    questionFinished
+    questionFinished,
+    audioFeedbackMode,
+    setaudioRecordings,
+    audioRecordings,
 } : any) => {
     const [isplaying,
         setisplaying] = useState(true);
@@ -46,6 +49,55 @@ const Question = ({
         }
     }, [question]);
 
+    const audioRef = useRef < HTMLAudioElement > (null);
+
+    const recorder = new MicRecorder({bitRate: 128});
+
+        const [audioStopped, setaudioStopped] = useState(false);
+    let buffercollected = false;
+    const stopMicRecording = () => {
+        // if(audioStopped){
+        //     return;
+        // };
+        recorder
+            .stop()
+            .getMp3()
+            .then(([buffer, blob]:any) => {
+                // do what ever you want with buffer and blob Example: Create a mp3 file and
+                // play
+                if(buffercollected){
+                    return;
+                };
+                buffercollected=true;
+                console.log("ended");
+                let currentaudiorecordings = audioRecordings;
+                let recordingobject = {question:question,buffer:buffer}
+
+                if (audioRecordings.some((e:any) => e.question === question)) {
+                    console.log("recording already exists");
+                  }
+                else if(currentaudiorecordings.length>0){
+                    let newrecordings = [...audioRecordings,recordingobject];
+                    setaudioRecordings(newrecordings)
+                } else {
+                    setaudioRecordings([recordingobject]);
+                };
+                // const file = new File(buffer, 'me-at-thevoice.mp3', {
+                //     type: blob.type,
+                //     lastModified: Date.now()
+                // });
+                // console.log(URL.createObjectURL(file));
+                // setaudioStopped(false);
+
+                // const player = new Audio(URL.createObjectURL(file));
+                // player.play();
+
+            })
+            .catch((e:any) => {
+                console.log(e);
+            });
+    }
+
     let pressed = false;
     const nextquestion = () => {
         if (questionsEnded) {
@@ -56,17 +108,20 @@ const Question = ({
             setisplaying(false);
         };
         pressed = true;
-
+        if(!audioStopped){
+            stopMicRecording();
+        };
+        
         startTimerAudio();
         // if (!pressed) {     startTimerAudio(); }; pressed = true;
     };
 
     const timerhasstopped = () => {
+        questionFinished(question);
+        stopquestiontimeSound();
         if (questionsEnded) {
             return;
         };
-        questionFinished(question);
-        stopquestiontimeSound();
         if (!questionsEnded) {
             // document.addEventListener('keydown', (e : KeyboardEvent) => nextquestion(e));
         } else if (questionsEnded) {
@@ -79,9 +134,21 @@ const Question = ({
         document.addEventListener('keydown', (e : KeyboardEvent) => {
             nextquestion();
         });
-
+        console.log(audioStopped)
+        if(!audioStopped){
+            recorder
+            .start()
+            .then(() => {
+                console.log("recording started")
+            })
+            .catch((e : any) => {
+                console.error(e);
+            });
+        };
+      
         return () => {
             document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
+            // setaudioStopped(false);
         };
 
     }, [question]);
@@ -108,9 +175,10 @@ const Question = ({
 
                 {!isplaying && <QuestionTimer timerhasstopped={timerhasstopped}/>}
             </div>
+            <audio ref={audioRef} hidden/>
         </div>
 
     )
 }
 
-export default Question;
+export default QuestionWithAudio;
