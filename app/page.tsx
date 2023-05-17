@@ -180,8 +180,13 @@ export default function Home() {
         SetCookie("audioFeedbackMode", option);
     };
 
+    const [startedButtonDisabled, setstartedButtonDisabled] = useState(true);
     useEffect(() => {
         getQuestions();
+        let timeout1 = setTimeout(() => {
+            setstartedButtonDisabled(false);
+        }, 3000);
+
         try {
             let interruptModeCookieValue = GetCookie("interruptMode");
             if (!interruptModeCookieValue) {
@@ -233,7 +238,9 @@ export default function Home() {
             }
 
         } catch (error) {}
-
+    return ()=>{
+        clearTimeout(timeout1);
+    }
     }, []);
 
     return (
@@ -303,7 +310,7 @@ export default function Home() {
             </div>
 
             <div className="d-flex justify-content-center align-item-center">
-                {!started &&< StartedButton started = {
+                {!started && !startedButtonDisabled &&< StartedButton started = {
                     started
                 }
                 setstarted = {
