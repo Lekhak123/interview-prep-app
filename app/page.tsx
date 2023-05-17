@@ -12,18 +12,20 @@ import Cookies from 'js-cookie';
 
 export default function Home() {
 
-    const SetCookie = (name : string, value : boolean) => {
-        Cookies?.set(name, `${value}`, {expires: 7});
+    const SetCookie = (name : string, value : string | boolean | number) => {
+        Cookies
+            ?.set(name, `${value}`, {expires: 30});
     };
 
     const RemoveCookie = (name : string) => {
-        Cookies?.remove(name);
+        Cookies
+            ?.remove(name);
     };
 
-    const GetCookie = (name:string) => {
-        return Cookies?.get(name)||false;
+    const GetCookie = (name : string) => {
+        return Cookies
+            ?.get(name) || false;
     };
-
 
     const [started,
         setstarted] = useState(false);
@@ -102,13 +104,21 @@ export default function Home() {
     const [audioFeedbackMode,
         setaudioFeedbackMode] = useState(true);
 
+    const [SliderValue,
+        setSliderValue] = useState(40);
+    const changeSlider = (e : any) => {
+        let value = e
+            ?.target.value;
+        setSliderValue(value);
+        SetCookie("sliderVolume", value);
+    };
+
     const getQuestions = async() => {
         let questions = await getInterviewQuestions();
         setquestionArray(questions);
         setquestionsNumber(questions.length - 1);
         setcurrentQuestion(questions[0]);
     }
-
 
     const stoptime = () => {
         stop();
@@ -134,7 +144,7 @@ export default function Home() {
                 ?.file;
             console.log(file);
             const player = new Audio(URL.createObjectURL(file));
-            player.playbackRate = 1.6;
+            player.playbackRate = SliderValue / 100 || 1.5;
             player.play();
         };
     };
@@ -157,7 +167,7 @@ export default function Home() {
             ?.target
                 ?.checked || false;
         setinterruptionMode(option);
-        SetCookie("interruptMode",option);
+        SetCookie("interruptMode", option);
     };
 
     const handleaudioFeedbackMode = (e : any) => {
@@ -165,39 +175,69 @@ export default function Home() {
             ?.target
                 ?.checked || false;
         setaudioFeedbackMode(option);
-        SetCookie("audioFeedbackMode",option);
+        SetCookie("audioFeedbackMode", option);
     };
 
     useEffect(() => {
         getQuestions();
         try {
             let interruptModeCookieValue = GetCookie("interruptMode");
-            if(!interruptModeCookieValue){
-                SetCookie("interruptMode",false);
-            } else{
-                interruptModeCookieValue = (interruptModeCookieValue === 'true')||false;
-                console.log("here",interruptModeCookieValue)
-                if(interruptionMode!==interruptModeCookieValue){
+            if (!interruptModeCookieValue) {
+                SetCookie("interruptMode", false);
+            } else {
+                interruptModeCookieValue = (interruptModeCookieValue === 'true') || false;
+                console.log("here", interruptModeCookieValue)
+                if (interruptionMode !== interruptModeCookieValue) {
                     setinterruptionMode(interruptModeCookieValue);
                 };
             }
             let audioFeedbackModeCookieValue = GetCookie("audioFeedbackMode");
-            if(!audioFeedbackModeCookieValue){
-                SetCookie("audioFeedbackMode",true);
+            if (!audioFeedbackModeCookieValue) {
+                SetCookie("audioFeedbackMode", true);
             } else {
                 console.log(audioFeedbackModeCookieValue)
-                audioFeedbackModeCookieValue = (audioFeedbackModeCookieValue === 'true')||false;
-                if(audioFeedbackMode!==audioFeedbackModeCookieValue){
+                audioFeedbackModeCookieValue = (audioFeedbackModeCookieValue === 'true') || false;
+                if (audioFeedbackMode !== audioFeedbackModeCookieValue) {
                     setaudioFeedbackMode(audioFeedbackModeCookieValue);
                 };
             };
-        } catch (error) {
-            
-        }
 
+            let sliverVloumeCookieValue : any = GetCookie("sliderVolume");
+            if (!sliverVloumeCookieValue) {
+                SetCookie("sliderVolume", 40);
+            } else {
+                if (sliverVloumeCookieValue === "0") {
+                    sliverVloumeCookieValue = 0;
+                } else {
+                    sliverVloumeCookieValue = parseInt(sliverVloumeCookieValue) || 40;
+                };
+                if (SliderValue !== sliverVloumeCookieValue) {
+
+                    let currentvalue = SliderValue;
+                    console.log(currentvalue, sliverVloumeCookieValue)
+                    if (currentvalue < sliverVloumeCookieValue) {
+                        let interval = setInterval(() => {
+                            setSliderValue(currentvalue++);
+                            if (currentvalue > sliverVloumeCookieValue) {
+                                clearInterval(interval);
+                            }
+                        }, 10);
+                    } else {
+                        console.log("herdwdwdewe")
+                        console.log(currentvalue)
+                        let interval = setInterval(() => {
+                            setSliderValue(currentvalue--);
+                            if (currentvalue < sliverVloumeCookieValue) {
+                                clearInterval(interval);
+                            }
+                        }, 10);
+                    }
+                };
+            }
+
+        } catch (error) {}
 
     }, []);
-
 
     return (
 
@@ -244,6 +284,16 @@ export default function Home() {
                                 <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Voice Feedback</span>
                             </label>
                         </div>
+
+                        <div><input
+                            type="range"
+                            min="0"
+                            max="200"
+                            onChange={(e) => {
+                        changeSlider(e)
+                    }}
+                            value={SliderValue}
+                            className="range range-secondary  range-"/>{SliderValue}</div>
                     </div>
 }
                 </div>
