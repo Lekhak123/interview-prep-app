@@ -1,7 +1,10 @@
 import {useState, useRef, useEffect} from 'react';
 import QuestionTimer from './QuestionTimer';
 import getRandomInterruptiontime from '@/utils/GetInterruptiontime';
-const MicRecorder = require('mic-recorder-to-mp3');
+import { useCountUp } from 'use-count-up';
+
+
+
 
 const Question = ({
     interruptionMode,
@@ -14,6 +17,9 @@ const Question = ({
     const [isplaying,
         setisplaying] = useState(true);
 
+
+
+    
     const [interruptionInQueue,
         setinterruptionInQueue] = useState(false);
     useEffect(() => {

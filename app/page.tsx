@@ -83,7 +83,9 @@ export default function Home() {
     const [currentQuestion,
         setcurrentQuestion] = useState("");
     const [audioRecordings,
-        setaudioRecordings] = useState <any> ([]);
+        setaudioRecordings] = useState < any > ([]);
+    const [audioFeedbackMode,
+        setaudioFeedbackMode] = useState(true);
 
     const getQuestions = async() => {
         let questions = await getInterviewQuestions();
@@ -113,7 +115,16 @@ export default function Home() {
         setquestionsStart(false);
         getQuestions();
         setquestionsEnded(true);
-        console.log(audioRecordings);
+
+        if(audioFeedbackMode){
+            console.log(audioRecordings);
+            let file = audioRecordings[0]
+                ?.file;
+            console.log(file);
+            const player = new Audio(URL.createObjectURL(file));
+            player.playbackRate = 1.6;
+            player.play();
+        };
     };
 
     const questionFinished = (finishedquestion : string) => {
@@ -135,8 +146,7 @@ export default function Home() {
                 ?.checked || false;
         setinterruptionMode(option);
     };
-    const [audioFeedbackMode,
-        setaudioFeedbackMode] = useState(true);
+
     const handleaudioFeedbackMode = (e : any) => {
         let option = e
             ?.target

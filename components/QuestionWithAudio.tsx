@@ -51,10 +51,10 @@ const QuestionWithAudio = ({
 
     const audioRef = useRef < HTMLAudioElement > (null);
 
-    const recorder = new MicRecorder({bitRate: 128});
+    const recorder = new MicRecorder({bitRate: 1028 });
 
         const [audioStopped, setaudioStopped] = useState(false);
-    let buffercollected = false;
+    let buffercollected = false;    
     const stopMicRecording = () => {
         // if(audioStopped){
         //     return;
@@ -71,23 +71,23 @@ const QuestionWithAudio = ({
                 buffercollected=true;
                 console.log("ended");
                 let currentaudiorecordings = audioRecordings;
-                let recordingobject = {question:question,buffer:buffer}
-
+                
+                const file = new File(buffer, `${Date.now()}.mp3`, {
+                    type: blob.type,
+                    lastModified: Date.now()
+                });
+                let recordingobject = {question:question,file:file}
                 if (audioRecordings.some((e:any) => e.question === question)) {
                     console.log("recording already exists");
-                  }
+                }
                 else if(currentaudiorecordings.length>0){
                     let newrecordings = [...audioRecordings,recordingobject];
                     setaudioRecordings(newrecordings)
                 } else {
                     setaudioRecordings([recordingobject]);
                 };
-                // const file = new File(buffer, 'me-at-thevoice.mp3', {
-                //     type: blob.type,
-                //     lastModified: Date.now()
-                // });
                 // console.log(URL.createObjectURL(file));
-                // setaudioStopped(false);
+                setaudioStopped(false);
 
                 // const player = new Audio(URL.createObjectURL(file));
                 // player.play();
@@ -136,10 +136,11 @@ const QuestionWithAudio = ({
         });
         console.log(audioStopped)
         if(!audioStopped){
+            setaudioStopped(true);
             recorder
             .start()
             .then(() => {
-                console.log("recording started")
+                console.log("recording started");
             })
             .catch((e : any) => {
                 console.error(e);
