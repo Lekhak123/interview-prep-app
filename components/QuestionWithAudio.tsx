@@ -69,7 +69,6 @@ const QuestionWithAudio = ({
                     return;
                 };
                 buffercollected=true;
-                console.log("ended");
                 let currentaudiorecordings = audioRecordings;
                 
                 const file = new File(buffer, `${Date.now()}.mp3`, {
@@ -77,6 +76,7 @@ const QuestionWithAudio = ({
                     lastModified: Date.now()
                 });
                 let recordingobject = {question:question,file:file}
+
                 if (audioRecordings.some((e:any) => e.question === question)) {
                     console.log("recording already exists");
                 }
@@ -134,13 +134,12 @@ const QuestionWithAudio = ({
         document.addEventListener('keydown', (e : KeyboardEvent) => {
             nextquestion();
         });
-        console.log(audioStopped)
         if(!audioStopped){
             setaudioStopped(true);
             recorder
             .start()
             .then(() => {
-                console.log("recording started");
+                // console.log("recording started");
             })
             .catch((e : any) => {
                 console.error(e);
@@ -167,7 +166,7 @@ const QuestionWithAudio = ({
 
                 </div>
                 <div
-                    className="mb-3 underline decoration-solid decoration-pink-500 hover:decoration-wavy questioncontain text-3xl  font-bold capitalize antialiased text-rose-600 hover:text-emerald-600">
+                    className="mb-3 underline decoration-solid decoration-pink-500 hover:decoration-wavy questioncontain text-3xl  font-bold capitalize antialiased text-rose-600 hover:text-emerald-600 text-center">
                     {question}
                 </div>
             </div>

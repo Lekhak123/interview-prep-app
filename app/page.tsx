@@ -9,6 +9,8 @@ import getInterviewQuestions from "@/utils/GetInterviewQuestions";
 import Question from "@/components/Question";
 import QuestionWithAudio from "@/components/QuestionWithAudio";
 import Cookies from 'js-cookie';
+import QuestionsFinished from "@/components/QuestionsFinished";
+
 
 export default function Home() {
 
@@ -138,15 +140,15 @@ export default function Home() {
         getQuestions();
         setquestionsEnded(true);
 
-        if (audioFeedbackMode) {
-            console.log(audioRecordings);
-            let file = audioRecordings[0]
-                ?.file;
-            console.log(file);
-            const player = new Audio(URL.createObjectURL(file));
-            player.playbackRate = SliderValue / 100 || 1.5;
-            player.play();
-        };
+        // if (audioFeedbackMode) {
+        //     console.log(audioRecordings);
+        //     let file = audioRecordings[0]
+        //         ?.file;
+        //     console.log(file);
+        //     const player = new Audio(URL.createObjectURL(file));
+        //     player.playbackRate = SliderValue / 100 || 1.5;
+        //     player.play();
+        // };
     };
 
     const questionFinished = (finishedquestion : string) => {
@@ -186,7 +188,6 @@ export default function Home() {
                 SetCookie("interruptMode", false);
             } else {
                 interruptModeCookieValue = (interruptModeCookieValue === 'true') || false;
-                console.log("here", interruptModeCookieValue)
                 if (interruptionMode !== interruptModeCookieValue) {
                     setinterruptionMode(interruptModeCookieValue);
                 };
@@ -195,7 +196,6 @@ export default function Home() {
             if (!audioFeedbackModeCookieValue) {
                 SetCookie("audioFeedbackMode", true);
             } else {
-                console.log(audioFeedbackModeCookieValue)
                 audioFeedbackModeCookieValue = (audioFeedbackModeCookieValue === 'true') || false;
                 if (audioFeedbackMode !== audioFeedbackModeCookieValue) {
                     setaudioFeedbackMode(audioFeedbackModeCookieValue);
@@ -214,7 +214,6 @@ export default function Home() {
                 if (SliderValue !== sliverVloumeCookieValue) {
 
                     let currentvalue = SliderValue;
-                    console.log(currentvalue, sliverVloumeCookieValue)
                     if (currentvalue < sliverVloumeCookieValue) {
                         let interval = setInterval(() => {
                             setSliderValue(currentvalue++);
@@ -223,8 +222,6 @@ export default function Home() {
                             }
                         }, 10);
                     } else {
-                        console.log("herdwdwdewe")
-                        console.log(currentvalue)
                         let interval = setInterval(() => {
                             setSliderValue(currentvalue--);
                             if (currentvalue < sliverVloumeCookieValue) {
@@ -285,17 +282,22 @@ export default function Home() {
                             </label>
                         </div>
 
-                        <div><input
+                        
+                    </div>
+}
+
+{(!started || questionsEnded) && <div><input
                             type="range"
                             min="0"
-                            max="200"
+                            max="100"
                             onChange={(e) => {
                         changeSlider(e)
                     }}
                             value={SliderValue}
-                            className="range range-secondary  range-"/>{SliderValue}</div>
-                    </div>
-}
+                            className="range range-secondary  range-"/>{SliderValue}</div> }
+
+
+
                 </div>
 
             </div>
@@ -335,6 +337,9 @@ export default function Home() {
                     setaudioRecordings={setaudioRecordings}
                     audioRecordings={audioRecordings}/>
 }
+{questionsEnded && audioFeedbackMode && <QuestionsFinished questionsArray={audioRecordings} volume={SliderValue / 100}/>
+}
+
 
                 {questionsStart && <audio ref={questionTimerAudioRef} src={SoundLocation}/>}
 
@@ -343,7 +348,7 @@ export default function Home() {
 
                 {started && <CircleTimer stoptime={stoptime} duration={5}/>}
             </div>
-            {questionsEnded && <div>Questions ended</div>}
+            {questionsEnded  && !audioFeedbackMode && <div>Questions ended</div>}
         </div>
     )
 }
