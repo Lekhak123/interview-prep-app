@@ -52,7 +52,8 @@ export default function Home() {
         changeAudioStatus] = useState(false);
 
     const questionTimerAudioRef = useRef < any > ();
-
+    const [audioRecordings,
+        setaudioRecordings] = useState < any > ([]);
     // let questiontimeraudio = new Audio(SoundLocation);
 
     const playQuestionTimerAudio = () => {
@@ -79,6 +80,8 @@ export default function Home() {
 
     const handleResetButton = () => {
         setstarted(false);
+        setquestionsEnded(false);
+        setaudioRecordings([]);
         if (isPlaying) {
             resetSound();
             pause();
@@ -101,8 +104,7 @@ export default function Home() {
         setquestionsNumber] = useState(0);
     const [currentQuestion,
         setcurrentQuestion] = useState("");
-    const [audioRecordings,
-        setaudioRecordings] = useState < any > ([]);
+  
     const [audioFeedbackMode,
         setaudioFeedbackMode] = useState(true);
 
