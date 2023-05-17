@@ -8,8 +8,23 @@ import useSound from 'use-sound';
 import getInterviewQuestions from "@/utils/GetInterviewQuestions";
 import Question from "@/components/Question";
 import QuestionWithAudio from "@/components/QuestionWithAudio";
+import Cookies from 'js-cookie';
 
 export default function Home() {
+
+    const SetCookie = (name : string, value : boolean) => {
+        Cookies?.set(name, `${value}`, {expires: 7});
+    };
+
+    const RemoveCookie = (name : string) => {
+        Cookies?.remove(name);
+    };
+
+    const GetCookie = (name:string) => {
+        return Cookies?.get(name)||false;
+    };
+
+
     const [started,
         setstarted] = useState(false);
     let soundlocation = timerSound();
@@ -93,10 +108,7 @@ export default function Home() {
         setquestionsNumber(questions.length - 1);
         setcurrentQuestion(questions[0]);
     }
-    useEffect(() => {
-        getQuestions();
 
-    }, []);
 
     const stoptime = () => {
         stop();
@@ -116,7 +128,7 @@ export default function Home() {
         getQuestions();
         setquestionsEnded(true);
 
-        if(audioFeedbackMode){
+        if (audioFeedbackMode) {
             console.log(audioRecordings);
             let file = audioRecordings[0]
                 ?.file;
@@ -145,6 +157,7 @@ export default function Home() {
             ?.target
                 ?.checked || false;
         setinterruptionMode(option);
+        SetCookie("interruptMode",option);
     };
 
     const handleaudioFeedbackMode = (e : any) => {
@@ -152,7 +165,39 @@ export default function Home() {
             ?.target
                 ?.checked || false;
         setaudioFeedbackMode(option);
+        SetCookie("audioFeedbackMode",option);
     };
+
+    useEffect(() => {
+        getQuestions();
+        try {
+            let interruptModeCookieValue = GetCookie("interruptMode");
+            if(!interruptModeCookieValue){
+                SetCookie("interruptMode",false);
+            } else{
+                interruptModeCookieValue = (interruptModeCookieValue === 'true')||false;
+                console.log("here",interruptModeCookieValue)
+                if(interruptionMode!==interruptModeCookieValue){
+                    setinterruptionMode(interruptModeCookieValue);
+                };
+            }
+            let audioFeedbackModeCookieValue = GetCookie("audioFeedbackMode");
+            if(!audioFeedbackModeCookieValue){
+                SetCookie("audioFeedbackMode",true);
+            } else {
+                console.log(audioFeedbackModeCookieValue)
+                audioFeedbackModeCookieValue = (audioFeedbackModeCookieValue === 'true')||false;
+                if(audioFeedbackMode!==audioFeedbackModeCookieValue){
+                    setaudioFeedbackMode(audioFeedbackModeCookieValue);
+                };
+            };
+        } catch (error) {
+            
+        }
+
+
+    }, []);
+
 
     return (
 
