@@ -27,7 +27,16 @@ export default function Home() {
             draggable: true,
             progress: undefined,
             theme: "dark",
+            toastId:"interruption"
             });
+    };
+
+    const [randomVoice, setrandomVoice] = useState<any>()
+    const synth = window.speechSynthesis;
+    synth.onvoiceschanged = async function (){
+        let voices =await  synth.getVoices();
+        let randomvoice = voices[Math.floor(Math.random()*voices.length)];
+        setrandomVoice(randomvoice);
     };
 
 
@@ -259,6 +268,11 @@ export default function Home() {
         }
     }, []);
 
+
+
+
+
+
     return (
 
         <div
@@ -308,7 +322,7 @@ export default function Home() {
                     </div>
 }
 
-                    {(!started || questionsEnded) && <div><input
+                    {(!started || questionsEnded) &&audioFeedbackMode && <div><input
                         type="range"
                         min="0"
                         max="100"
@@ -338,6 +352,7 @@ export default function Home() {
             <div className="questionandtimerwrapper d-flex justify-center flex-col">
 
                 {questionsStart && !audioFeedbackMode && <Question
+                    randomVoice={randomVoice}
                     toasterror={toasterror}
                     questionsEnded={questionsEnded}
                     stopquestiontimeSound={stopQuestionstime}
@@ -348,6 +363,7 @@ export default function Home() {
 }
 
                 {questionsStart && audioFeedbackMode && <QuestionWithAudio
+                    randomVoice={randomVoice}
                     toasterror={toasterror}
                     questionsEnded={questionsEnded}
                     stopquestiontimeSound={stopQuestionstime}

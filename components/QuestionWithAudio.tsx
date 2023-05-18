@@ -1,3 +1,4 @@
+"use client";
 import {useState, useRef, useEffect} from 'react';
 import QuestionTimer from './QuestionTimer';
 import getRandomInterruptiontime from '@/utils/GetInterruptiontime';
@@ -13,24 +14,25 @@ const QuestionWithAudio = ({
     audioFeedbackMode,
     setaudioRecordings,
     audioRecordings,
-    toasterror
+    toasterror,
+    randomVoice
 } : any) => {
     const [isplaying,
         setisplaying] = useState(true);
 
-        let interruptionaudio = new Audio("/sounds/beep.mp3");
 
-        const playinterruption = ()=>{
-            toasterror("You have been interrupted!");
-            interruptionaudio.play();
-        };
-    
-    
-        const interrupt = ()=>{
-            playinterruption();
-            nextquestion();
-            setinterruptionInQueue(false);
-        };
+    let interruptionaudio = new Audio("/sounds/beep.mp3");
+
+    const playinterruption = () => {
+        toasterror("You have been interrupted!");
+        interruptionaudio.play();
+    };
+
+    const interrupt = () => {
+        playinterruption();
+        nextquestion();
+        setinterruptionInQueue(false);
+    };
 
     const [interruptionInQueue,
         setinterruptionInQueue] = useState(false);
@@ -64,37 +66,41 @@ const QuestionWithAudio = ({
 
     const audioRef = useRef < HTMLAudioElement > (null);
 
-    const recorder = new MicRecorder({bitRate: 1028 });
+    const recorder = new MicRecorder({bitRate: 1028});
 
-        const [audioStopped, setaudioStopped] = useState(false);
-    let buffercollected = false;    
+    const [audioStopped,
+        setaudioStopped] = useState(false);
+    let buffercollected = false;
     const stopMicRecording = () => {
-        // if(audioStopped){
-        //     return;
-        // };
+        // if(audioStopped){     return; };
         recorder
             .stop()
             .getMp3()
-            .then(([buffer, blob]:any) => {
+            .then(([buffer, blob] : any) => {
                 // do what ever you want with buffer and blob Example: Create a mp3 file and
                 // play
-                if(buffercollected){
+                if (buffercollected) {
                     return;
                 };
-                buffercollected=true;
+                buffercollected = true;
                 let currentaudiorecordings = audioRecordings;
-                
+
                 const file = new File(buffer, `${Date.now()}.mp3`, {
                     type: blob.type,
                     lastModified: Date.now()
                 });
-                let recordingobject = {question:question,file:file}
-
-                if (audioRecordings.some((e:any) => e.question === question)) {
-                    console.log("recording already exists");
+                let recordingobject = {
+                    question: question,
+                    file: file
                 }
-                else if(currentaudiorecordings.length>0){
-                    let newrecordings = [...audioRecordings,recordingobject];
+
+                if (audioRecordings.some((e : any) => e.question === question)) {
+                    console.log("recording already exists");
+                } else if (currentaudiorecordings.length > 0) {
+                    let newrecordings = [
+                        ...audioRecordings,
+                        recordingobject
+                    ];
                     setaudioRecordings(newrecordings)
                 } else {
                     setaudioRecordings([recordingobject]);
@@ -102,11 +108,10 @@ const QuestionWithAudio = ({
                 // console.log(URL.createObjectURL(file));
                 setaudioStopped(false);
 
-                // const player = new Audio(URL.createObjectURL(file));
-                // player.play();
+                // const player = new Audio(URL.createObjectURL(file)); player.play();
 
             })
-            .catch((e:any) => {
+            .catch((e : any) => {
                 console.log(e);
             });
     }
@@ -121,10 +126,10 @@ const QuestionWithAudio = ({
             setisplaying(false);
         };
         pressed = true;
-        if(!audioStopped){
+        if (!audioStopped) {
             stopMicRecording();
         };
-        
+
         startTimerAudio();
         // if (!pressed) {     startTimerAudio(); }; pressed = true;
     };
@@ -142,26 +147,36 @@ const QuestionWithAudio = ({
         }
     };
 
+
     useEffect(() => {
         setisplaying(true);
         document.addEventListener('keydown', (e : KeyboardEvent) => {
             nextquestion();
         });
-        if(!audioStopped){
+        let synth:any;
+        if (window && typeof window !== 'undefined') {
+        synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance();
+        utterance.voice = randomVoice;
+        utterance.text = question;
+        synth.speak(utterance);
+        };
+        if (!audioStopped) {
             setaudioStopped(true);
             recorder
-            .start()
-            .then(() => {
-                // console.log("recording started");
-            })
-            .catch((e : any) => {
-                console.error(e);
-            });
+                .start()
+                .then(() => {
+                    // console.log("recording started");
+                })
+                .catch((e : any) => {
+                    console.error(e);
+                });
         };
-      
+
         return () => {
             document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
             // setaudioStopped(false);
+            synth?.cancel();
         };
 
     }, [question]);

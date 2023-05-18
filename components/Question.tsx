@@ -1,10 +1,9 @@
+"use client";
+
 import {useState, useRef, useEffect} from 'react';
 import QuestionTimer from './QuestionTimer';
 import getRandomInterruptiontime from '@/utils/GetInterruptiontime';
-import { useCountUp } from 'use-count-up';
-
-
-
+import {useCountUp} from 'use-count-up';
 
 const Question = ({
     interruptionMode,
@@ -13,22 +12,21 @@ const Question = ({
     stopquestiontimeSound,
     question,
     questionFinished,
-    toasterror
+    toasterror,
+    randomVoice
 } : any) => {
     const [isplaying,
         setisplaying] = useState(true);
 
-
-
     let interruptionaudio = new Audio("/sounds/beep.mp3");
 
-    const playinterruption = ()=>{
+    const playinterruption = () => {
+
         toasterror("You have been interrupted!");
         interruptionaudio.play();
     };
 
-
-    const interrupt = ()=>{
+    const interrupt = () => {
         playinterruption();
         nextquestion();
         setinterruptionInQueue(false);
@@ -44,7 +42,6 @@ const Question = ({
         if (interruptionMode && !interruptionInQueue) {
             const getinterruptiontime = async() => {
                 let interruptiontime : number = await getRandomInterruptiontime();
-                console.log(interruptiontime)
                 // let interruptiontime : number = 5000;
                 setinterruptionInQueue(true);
                 // console.log(`This will run after ${interruptiontime / 1000} second!`)
@@ -67,9 +64,12 @@ const Question = ({
 
     let pressed = false;
     const nextquestion = () => {
+
         if (questionsEnded) {
             return;
         };
+
+
         document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
         if (!pressed) {
             setisplaying(false);
@@ -98,9 +98,17 @@ const Question = ({
         document.addEventListener('keydown', (e : KeyboardEvent) => {
             nextquestion();
         });
-
+        let synth:any;
+        if (window && typeof window !== 'undefined') {
+        synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance();
+        utterance.voice = randomVoice;
+        utterance.text = question;
+        synth.speak(utterance);
+        };
         return () => {
             document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
+            synth?.cancel();
         };
 
     }, [question]);
