@@ -32,13 +32,9 @@ export default function Home() {
     };
 
     const [randomVoice, setrandomVoice] = useState<any>()
-    const synth = window.speechSynthesis;
-    synth.onvoiceschanged = async function (){
-        let voices =await  synth.getVoices();
-        let randomvoice = voices[Math.floor(Math.random()*voices.length)];
-        setrandomVoice(randomvoice);
-    };
 
+
+ 
 
 
     const SetCookie = (name : string, value : string | boolean | number) => {
@@ -208,6 +204,14 @@ export default function Home() {
         setstartedButtonDisabled] = useState(true);
     useEffect(() => {
         getQuestions();
+
+        const synth = window.speechSynthesis;
+        synth.onvoiceschanged = async function (){
+            let voices =await  synth.getVoices();
+            let randomvoice = voices[Math.floor(Math.random()*voices.length)];
+            setrandomVoice(randomvoice);
+        };
+    
         let timeout1 = setTimeout(() => {
             setstartedButtonDisabled(false);
         }, 3000);
