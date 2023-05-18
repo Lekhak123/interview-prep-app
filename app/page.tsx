@@ -10,9 +10,27 @@ import Question from "@/components/Question";
 import QuestionWithAudio from "@/components/QuestionWithAudio";
 import Cookies from 'js-cookie';
 import QuestionsFinished from "@/components/QuestionsFinished";
-
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
+
+
+
+    let toasterror = (msg:string)=>{
+        toast.error(msg, {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            });
+    };
+
+
 
     const SetCookie = (name : string, value : string | boolean | number) => {
         Cookies
@@ -104,7 +122,7 @@ export default function Home() {
         setquestionsNumber] = useState(0);
     const [currentQuestion,
         setcurrentQuestion] = useState("");
-  
+
     const [audioFeedbackMode,
         setaudioFeedbackMode] = useState(true);
 
@@ -122,7 +140,7 @@ export default function Home() {
         setquestionArray(questions);
         setquestionsNumber(questions.length - 1);
         setcurrentQuestion(questions[0]);
-    }
+    };
 
     const stoptime = () => {
         stop();
@@ -142,15 +160,10 @@ export default function Home() {
         getQuestions();
         setquestionsEnded(true);
 
-        // if (audioFeedbackMode) {
-        //     console.log(audioRecordings);
-        //     let file = audioRecordings[0]
-        //         ?.file;
-        //     console.log(file);
-        //     const player = new Audio(URL.createObjectURL(file));
-        //     player.playbackRate = SliderValue / 100 || 1.5;
-        //     player.play();
-        // };
+        // if (audioFeedbackMode) {     console.log(audioRecordings);     let file =
+        // audioRecordings[0]         ?.file;     console.log(file);     const player =
+        // new Audio(URL.createObjectURL(file));     player.playbackRate = SliderValue /
+        // 100 || 1.5;     player.play(); };
     };
 
     const questionFinished = (finishedquestion : string) => {
@@ -182,7 +195,8 @@ export default function Home() {
         SetCookie("audioFeedbackMode", option);
     };
 
-    const [startedButtonDisabled, setstartedButtonDisabled] = useState(true);
+    const [startedButtonDisabled,
+        setstartedButtonDisabled] = useState(true);
     useEffect(() => {
         getQuestions();
         let timeout1 = setTimeout(() => {
@@ -235,14 +249,14 @@ export default function Home() {
                                 clearInterval(interval);
                             }
                         }, 10);
-                    }
+                    };
                 };
-            }
+            };
 
-        } catch (error) {}
-    return ()=>{
-        clearTimeout(timeout1);
-    }
+        } catch (error) {};
+        return () => {
+            clearTimeout(timeout1);
+        }
     }, []);
 
     return (
@@ -291,21 +305,18 @@ export default function Home() {
                             </label>
                         </div>
 
-                        
                     </div>
 }
 
-{(!started || questionsEnded) && <div><input
-                            type="range"
-                            min="0"
-                            max="100"
-                            onChange={(e) => {
+                    {(!started || questionsEnded) && <div><input
+                        type="range"
+                        min="0"
+                        max="100"
+                        onChange={(e) => {
                         changeSlider(e)
                     }}
-                            value={SliderValue}
-                            className="range range-secondary  range-"/>{SliderValue}</div> }
-
-
+                        value={SliderValue}
+                        className="range range-secondary  range-"/>{SliderValue}</div>}
 
                 </div>
 
@@ -327,6 +338,7 @@ export default function Home() {
             <div className="questionandtimerwrapper d-flex justify-center flex-col">
 
                 {questionsStart && !audioFeedbackMode && <Question
+                    toasterror={toasterror}
                     questionsEnded={questionsEnded}
                     stopquestiontimeSound={stopQuestionstime}
                     startTimerAudio={playQuestionTimerAudio}
@@ -336,6 +348,7 @@ export default function Home() {
 }
 
                 {questionsStart && audioFeedbackMode && <QuestionWithAudio
+                    toasterror={toasterror}
                     questionsEnded={questionsEnded}
                     stopquestiontimeSound={stopQuestionstime}
                     startTimerAudio={playQuestionTimerAudio}
@@ -346,9 +359,8 @@ export default function Home() {
                     setaudioRecordings={setaudioRecordings}
                     audioRecordings={audioRecordings}/>
 }
-{questionsEnded && audioFeedbackMode && <QuestionsFinished questionsArray={audioRecordings} volume={SliderValue / 100}/>
+                {questionsEnded && audioFeedbackMode && <QuestionsFinished questionsArray={audioRecordings} volume={SliderValue / 100}/>
 }
-
 
                 {questionsStart && <audio ref={questionTimerAudioRef} src={SoundLocation}/>}
 
@@ -357,7 +369,18 @@ export default function Home() {
 
                 {started && <CircleTimer stoptime={stoptime} duration={5}/>}
             </div>
-            {questionsEnded  && !audioFeedbackMode && <div>Questions ended</div>}
+            {questionsEnded && !audioFeedbackMode && <div>Questions ended</div>}
+            <ToastContainer
+                position="top-right"
+                autoClose={4000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover={false}
+                theme="dark"/>
         </div>
     )
 }

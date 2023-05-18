@@ -12,14 +12,28 @@ const Question = ({
     startTimerAudio,
     stopquestiontimeSound,
     question,
-    questionFinished
+    questionFinished,
+    toasterror
 } : any) => {
     const [isplaying,
         setisplaying] = useState(true);
 
 
 
-    
+    let interruptionaudio = new Audio("/sounds/beep.mp3");
+
+    const playinterruption = ()=>{
+        toasterror("You have been interrupted!");
+        interruptionaudio.play();
+    };
+
+
+    const interrupt = ()=>{
+        playinterruption();
+        nextquestion();
+        setinterruptionInQueue(false);
+    };
+
     const [interruptionInQueue,
         setinterruptionInQueue] = useState(false);
     useEffect(() => {
@@ -30,13 +44,12 @@ const Question = ({
         if (interruptionMode && !interruptionInQueue) {
             const getinterruptiontime = async() => {
                 let interruptiontime : number = await getRandomInterruptiontime();
+                console.log(interruptiontime)
                 // let interruptiontime : number = 5000;
                 setinterruptionInQueue(true);
                 // console.log(`This will run after ${interruptiontime / 1000} second!`)
                 timeout = setTimeout(() => {
-                    // console.log("timeout triggered");
-                    nextquestion();
-                    setinterruptionInQueue(false);
+                    interrupt();
                 }, interruptiontime);
             };
             getinterruptiontime();

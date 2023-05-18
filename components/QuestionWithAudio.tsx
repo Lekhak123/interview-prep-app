@@ -13,9 +13,24 @@ const QuestionWithAudio = ({
     audioFeedbackMode,
     setaudioRecordings,
     audioRecordings,
+    toasterror
 } : any) => {
     const [isplaying,
         setisplaying] = useState(true);
+
+        let interruptionaudio = new Audio("/sounds/beep.mp3");
+
+        const playinterruption = ()=>{
+            toasterror("You have been interrupted!");
+            interruptionaudio.play();
+        };
+    
+    
+        const interrupt = ()=>{
+            playinterruption();
+            nextquestion();
+            setinterruptionInQueue(false);
+        };
 
     const [interruptionInQueue,
         setinterruptionInQueue] = useState(false);
@@ -31,9 +46,7 @@ const QuestionWithAudio = ({
                 setinterruptionInQueue(true);
                 // console.log(`This will run after ${interruptiontime / 1000} second!`)
                 timeout = setTimeout(() => {
-                    // console.log("timeout triggered");
-                    nextquestion();
-                    setinterruptionInQueue(false);
+                    interrupt();
                 }, interruptiontime);
             };
             getinterruptiontime();

@@ -8,13 +8,13 @@ export default async function getRandomInterruptiontime() {
     if (probability >= 90) {
         returntime = randomIntFromInterval(10, 20);
     } else if (probability < 90 && probability > 60) {
-        returntime = randomIntFromInterval(30, 60);
+        returntime = randomIntFromInterval(20, 25);
     } else if (probability <= 60 && probability > 20) {
-        returntime = randomIntFromInterval(45, 120);
+        returntime = randomIntFromInterval(25, 30);
     } else if (probability <= 20 && probability > 10) {
-        returntime = randomIntFromInterval(60, 200);
+        returntime = randomIntFromInterval(30, 35);
     } else {
-        returntime = randomIntFromInterval(150, 250);
+        returntime = randomIntFromInterval(35, 60);
     };
 
     if (returntime > 40) {
