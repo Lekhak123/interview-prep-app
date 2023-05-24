@@ -12,6 +12,8 @@ import Cookies from 'js-cookie';
 import QuestionsFinished from "@/components/QuestionsFinished";
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Link from "next/link";
+
 
 export default function Home() {
 
@@ -402,6 +404,11 @@ export default function Home() {
                 draggable
                 pauseOnHover={false}
                 theme="dark"/>
+
+
+  <div className="m-auto text-zinc-50 absolute bottom-0 right-0 text-xs"><Link href="https://github.com/ruriko123/interview-prep-app/blob/main/README.md" target="_blank">Terms of use and disclaimer</Link></div>
+
+
         </div>
     )
 }
