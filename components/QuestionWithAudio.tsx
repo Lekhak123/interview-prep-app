@@ -188,10 +188,19 @@ const QuestionWithAudio = ({
             {isplaying && <div
                 className="questiontextwrapper d-flex justify-centent-center align-items-center">
 
-                <div
-                    className=' d-flex justify-right align-items-center text-center m-auto mb-4 text-sm'>
-                    Press any key to stop.
+<div
+                    className=' d-flex justify-right align-items-center text-center m-auto mb-4 text-sm flex-col'>
+                        <div className="text">
 
+                   Press any key for the next question
+                        </div>
+
+                <div className="https://www.youtube.com/watch?v=V-_O7nl0Ii0">
+                <button onClick={nextquestion} className="text-xs font-thin subpixel-antialiased italic btn btn-md btn-active btn-square btn-secondary gap-2">
+                    Or Press here
+                    </button>
+
+                </div>
                 </div>
                 <div
                     className="mb-3 underline decoration-solid decoration-pink-500 hover:decoration-wavy questioncontain text-3xl  font-bold capitalize antialiased text-rose-600 hover:text-emerald-600 text-center">

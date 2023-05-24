@@ -143,7 +143,7 @@ export default function Home() {
     const getQuestions = async() => {
         let questions = await getInterviewQuestions();
         setquestionArray(questions);
-        setquestionsNumber(questions.length - 1);
+        setquestionsNumber(questions?.length - 1);
         setcurrentQuestion(questions[0]);
     };
 
