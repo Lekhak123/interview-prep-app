@@ -284,9 +284,12 @@ export default function Home() {
 
         <div
             className="App flex min-h-screen flex-col items-center justify-center gap-0 p-auto w-auto">
+           <div className="fixed top-0 left-0 m-1  text-amber-100  text-xs "><Link href="https://github.com/ruriko123/interview-prep-app/blob/main/README.md" target="_blank">Terms of use and disclaimer ❗❗</Link></div>
+           <div className="fixed bottom-0 left-0 m-auto ml-1 text-center text-cyan-200  text-xs ">Please note that this application is not affiliated with any government agency or official entity 🙂</div>
             <div className="d-flex m-5 justify-center align-center flex-col gap-5 w-auto">
 
                 <div className="fixed top-0  right-0  mt-4 mr-5">
+             
                     {started &&< ResetButton started = {
                         started
                     }
@@ -328,6 +331,7 @@ export default function Home() {
 
                     </div>
 }
+
 
                     {(!started || questionsEnded) &&audioFeedbackMode && <div><input
                         type="range"
@@ -405,8 +409,6 @@ export default function Home() {
                 pauseOnHover={false}
                 theme="dark"/>
 
-
-  <div className="m-auto text-zinc-50 absolute bottom-0 right-0 text-xs"><Link href="https://github.com/ruriko123/interview-prep-app/blob/main/README.md" target="_blank">Terms of use and disclaimer</Link></div>
 
 
         </div>
