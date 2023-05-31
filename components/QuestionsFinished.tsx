@@ -6,13 +6,21 @@ function QuestionsFinished({questionsArray,volume} : any) {
     const audioref = useRef(volume);
     const firstaudioref = useRef(volume);
     useEffect(() => {
-        if(volume){
-            audioref.current.volume=volume;
-            firstaudioref.current.volume=volume;
-        }
+        try {
+            if(volume){
+                audioref.current.volume=volume;
+                firstaudioref.current.volume=volume;
+            }
+        } catch (error) {
+            console.log(error);
+        };
     }, [volume])
     const setPlayBack = () => {
-        firstaudioref.current.playbackRate = 1.5;
+        try {
+            firstaudioref.current.playbackRate = 1.5;
+        } catch (error) {
+            console.log(error);
+        };
       };
     return (
         <div className='mt-8 '>

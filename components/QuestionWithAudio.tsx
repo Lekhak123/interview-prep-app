@@ -24,8 +24,12 @@ const QuestionWithAudio = ({
     let interruptionaudio = new Audio("/sounds/beep.mp3");
 
     const playinterruption = () => {
-        toasterror("You have been interrupted!");
-        interruptionaudio.play();
+        try {
+            toasterror("You have been interrupted!");
+            interruptionaudio?.play();
+        } catch (error) {
+            console.log(error);
+        };
     };
 
     const interrupt = () => {
@@ -41,17 +45,21 @@ const QuestionWithAudio = ({
             return;
         };
         let timeout : any;
-        if (interruptionMode && !interruptionInQueue) {
-            const getinterruptiontime = async() => {
-                let interruptiontime : number = await getRandomInterruptiontime();
-                // let interruptiontime : number = 5000;
-                setinterruptionInQueue(true);
-                // console.log(`This will run after ${interruptiontime / 1000} second!`)
-                timeout = setTimeout(() => {
-                    interrupt();
-                }, interruptiontime);
+        try {
+            if (interruptionMode && !interruptionInQueue) {
+                const getinterruptiontime = async() => {
+                    let interruptiontime : number = await getRandomInterruptiontime();
+                    // let interruptiontime : number = 5000;
+                    setinterruptionInQueue(true);
+                    // console.log(`This will run after ${interruptiontime / 1000} second!`)
+                    timeout = setTimeout(() => {
+                        interrupt();
+                    }, interruptiontime);
+                };
+                getinterruptiontime();
             };
-            getinterruptiontime();
+        } catch (error) {
+            console.log(error);
         };
 
         return () => {
@@ -72,11 +80,11 @@ const QuestionWithAudio = ({
         setaudioStopped] = useState(false);
     let buffercollected = false;
     const stopMicRecording = () => {
-        // if(audioStopped){     return; };
-        recorder
-            .stop()
-            .getMp3()
-            .then(([buffer, blob] : any) => {
+        try {
+            recorder
+            ?.stop()
+            ?.getMp3()
+            ?.then(([buffer, blob] : any) => {
                 // do what ever you want with buffer and blob Example: Create a mp3 file and
                 // play
                 if (buffercollected) {
@@ -114,28 +122,35 @@ const QuestionWithAudio = ({
             .catch((e : any) => {
                 console.log(e);
             });
-    }
+        } catch (error) {
+            console.log(error);
+        };
+    };
 
     let pressed = false;
     const nextquestion = () => {
-        if (questionsEnded) {
-            return;
+        try {
+            if (questionsEnded) {
+                return;
+            };
+            document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
+            if (!pressed) {
+                setisplaying(false);
+            };
+            pressed = true;
+            if (!audioStopped) {
+                stopMicRecording();
+            };
+            startTimerAudio();
+            // if (!pressed) {     startTimerAudio(); }; pressed = true;
+        } catch (error) {
+            console.log(error);
         };
-        document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
-        if (!pressed) {
-            setisplaying(false);
-        };
-        pressed = true;
-        if (!audioStopped) {
-            stopMicRecording();
-        };
-
-        startTimerAudio();
-        // if (!pressed) {     startTimerAudio(); }; pressed = true;
     };
 
     const timerhasstopped = () => {
-        questionFinished(question);
+        try {
+            questionFinished(question);
         stopquestiontimeSound();
         if (questionsEnded) {
             return;
@@ -144,16 +159,22 @@ const QuestionWithAudio = ({
             // document.addEventListener('keydown', (e : KeyboardEvent) => nextquestion(e));
         } else if (questionsEnded) {
             document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
-        }
+        };
+        } catch (error) {
+            console.log(error);
+        };
     };
 
 
     useEffect(() => {
-        setisplaying(true);
+    
+        let synth:any;
+
+        try {
+            setisplaying(true);
         document.addEventListener('keydown', (e : KeyboardEvent) => {
             nextquestion();
         });
-        let synth:any;
         if (window && typeof window !== 'undefined') {
         synth = window.speechSynthesis;
         const utterance = new SpeechSynthesisUtterance();
@@ -172,11 +193,18 @@ const QuestionWithAudio = ({
                     console.error(e);
                 });
         };
+        } catch (error) {
+            console.log(error);
+        };
 
         return () => {
-            document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
-            // setaudioStopped(false);
-            synth?.cancel();
+            try {
+                document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
+                // setaudioStopped(false);
+                synth?.cancel();
+            } catch (error) {
+                console.log(error);
+            };
         };
 
     }, [question]);
