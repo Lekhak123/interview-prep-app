@@ -39,18 +39,23 @@ const Question = ({
             return;
         };
         let timeout : any;
-        if (interruptionMode && !interruptionInQueue) {
-            const getinterruptiontime = async() => {
-                let interruptiontime : number = await getRandomInterruptiontime();
-                // let interruptiontime : number = 5000;
-                setinterruptionInQueue(true);
-                // console.log(`This will run after ${interruptiontime / 1000} second!`)
-                timeout = setTimeout(() => {
-                    interrupt();
-                }, interruptiontime);
+        try {
+            if (interruptionMode && !interruptionInQueue) {
+                const getinterruptiontime = async() => {
+                    let interruptiontime : number = await getRandomInterruptiontime();
+                    // let interruptiontime : number = 5000;
+                    setinterruptionInQueue(true);
+                    // console.log(`This will run after ${interruptiontime / 1000} second!`)
+                    timeout = setTimeout(() => {
+                        interrupt();
+                    }, interruptiontime);
+                };
+                getinterruptiontime();
             };
-            getinterruptiontime();
+        } catch (error) {
+            console.log(error);
         };
+        
 
         return () => {
             try {
@@ -66,46 +71,54 @@ const Question = ({
 
     const nextquestion = () => {
 
-        if (questionsEnded) {
-            return;
+        try {
+            if (questionsEnded) {
+                return;
+            };
+            document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
+            if (!pressed) {
+                setisplaying(false);
+            };
+            pressed = true;
+            startTimerAudio();
+        } catch (error) {
+            console.log(error);
         };
-
-
-        document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
-        if (!pressed) {
-            setisplaying(false);
-        };
-        pressed = true;
-
-        startTimerAudio();
-        // if (!pressed) {     startTimerAudio(); }; pressed = true;
     };
 
     const timerhasstopped = () => {
-        if (questionsEnded) {
-            return;
+        try {
+            if (questionsEnded) {
+                return;
+            };
+            questionFinished(question);
+            stopquestiontimeSound();
+            if (!questionsEnded) {
+                // document.addEventListener('keydown', (e : KeyboardEvent) => nextquestion(e));
+            } else if (questionsEnded) {
+                document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
+            };
+        } catch (error) {
+            console.log(error);
         };
-        questionFinished(question);
-        stopquestiontimeSound();
-        if (!questionsEnded) {
-            // document.addEventListener('keydown', (e : KeyboardEvent) => nextquestion(e));
-        } else if (questionsEnded) {
-            document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
-        }
     };
 
     useEffect(() => {
+        let synth:any;
+        try {
         setisplaying(true);
         document.addEventListener('keydown', (e : KeyboardEvent) => {
             nextquestion();
         });
-        let synth:any;
         if (window && typeof window !== 'undefined') {
         synth = window.speechSynthesis;
         const utterance = new SpeechSynthesisUtterance();
         utterance.voice = randomVoice;
         utterance.text = question;
         synth.speak(utterance);
+        };
+        } catch (error) {
+            console.log(error);
         };
         return () => {
             document.removeEventListener("keydown", (e : KeyboardEvent) => console.log(e));
