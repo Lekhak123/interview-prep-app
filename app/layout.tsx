@@ -2,7 +2,7 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 import "@/styles/global.css";
 export const metadata = {
-  title: '🔪',
+  title: 'Visa interview self mock test',
   description: 'Nextjs + Typescript + tailwind + daisyUI. Uses no backend.',
 }
 

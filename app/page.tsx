@@ -17,8 +17,8 @@ import Link from "next/link";
 
 export default function Home() {
 
-    console.log("🤓");
-    console.log("https://www.youtube.com/watch?v=VZrDxD0Za9I");
+    // console.log("🤓");
+    // console.log("https://www.youtube.com/watch?v=VZrDxD0Za9I");
 
     let toasterror = (msg:string)=>{
         toast.error(msg, {
